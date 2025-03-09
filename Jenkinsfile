@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        ARTIFACTORY_SERVER = 'artifactory' // Your JFrog Server ID
+        ARTIFACTORY_SERVER = 'Artifactory' // Your JFrog Server ID
         ARTIFACTORY_REPO = 'static-website-repo' // Your JFrog Repo Name
         DEPLOY_PATH = '/var/www/html/static-website'
     }
