@@ -40,10 +40,9 @@ pipeline {
 
         stage('Deploy to Web Server') {
             steps {
-                script {
-                    def creds = credentials('web-server-creds')
+                withCredentials([usernamePassword(credentialsId: 'web-server-creds', usernameVariable: 'SERVER_USER', passwordVariable: 'SERVER_PASSWORD')]) {
                     sh """
-                    sshpass -p '${creds.password}' ssh -o StrictHostKeyChecking=no ${creds.username}@${SERVER_IP} << EOF
+                    sshpass -p '${SERVER_PASSWORD}' ssh -o StrictHostKeyChecking=no ${SERVER_USER}@${SERVER_IP} << EOF
                         sudo mkdir -p $DEPLOY_PATH
                         sudo rm -rf $DEPLOY_PATH/*
                         sudo unzip static-website.zip -d $DEPLOY_PATH
