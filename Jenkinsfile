@@ -5,8 +5,6 @@ pipeline {
         ARTIFACTORY_SERVER = 'Artifactory' // Your JFrog Server ID
         ARTIFACTORY_REPO = 'static-website-repo' // Your JFrog Repo Name
         DEPLOY_PATH = '/var/www/html/static-website'
-        SERVER_USER = credentials('web-server-creds').username
-        SERVER_PASSWORD = credentials('web-server-creds').password
         SERVER_IP = '13.201.31.90' // Your EC2 Instance IP
     }
 
@@ -42,14 +40,17 @@ pipeline {
 
         stage('Deploy to Web Server') {
             steps {
-                sh """
-                sshpass -p '$SERVER_PASSWORD' ssh -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP << EOF
-                    sudo mkdir -p $DEPLOY_PATH
-                    sudo rm -rf $DEPLOY_PATH/*
-                    sudo unzip static-website.zip -d $DEPLOY_PATH
-                    sudo systemctl restart apache2
-                EOF
-                """
+                script {
+                    def creds = credentials('web-server-creds')
+                    sh """
+                    sshpass -p '${creds.password}' ssh -o StrictHostKeyChecking=no ${creds.username}@${SERVER_IP} << EOF
+                        sudo mkdir -p $DEPLOY_PATH
+                        sudo rm -rf $DEPLOY_PATH/*
+                        sudo unzip static-website.zip -d $DEPLOY_PATH
+                        sudo systemctl restart apache2
+                    EOF
+                    """
+                }
             }
         }
     }
